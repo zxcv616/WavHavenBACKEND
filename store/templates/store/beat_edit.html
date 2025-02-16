@@ -1,0 +1,177 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent"
+            style="text-shadow: 0 0 25px rgba(37, 99, 235, 0.4);">
+            Edit Beat
+        </h1>
+        
+        <div class="glass-effect rounded-xl p-8">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Title Field -->
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}" 
+                           class="block text-sm font-medium text-gray-300 mb-2">
+                        Title
+                    </label>
+                    <input type="text" 
+                           name="{{ form.title.name }}" 
+                           id="{{ form.title.id_for_label }}"
+                           value="{{ form.title.value|default:'' }}"
+                           class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                           placeholder="Enter beat title">
+                    {% if form.title.errors %}
+                    <p class="mt-1 text-sm text-red-400">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Price Field -->
+                <div class="form-group">
+                    <label for="{{ form.price.id_for_label }}"
+                           class="block text-sm font-medium text-gray-300 mb-2">
+                        Price ($)
+                    </label>
+                    <input type="number" 
+                           step="0.01"
+                           name="{{ form.price.name }}"
+                           id="{{ form.price.id_for_label }}"
+                           value="{{ form.price.value|default:'' }}"
+                           class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                           placeholder="Enter price">
+                    {% if form.price.errors %}
+                    <p class="mt-1 text-sm text-red-400">{{ form.price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Audio File Field -->
+                <div class="form-group">
+                    <label for="{{ form.audio_file.id_for_label }}"
+                           class="block text-sm font-medium text-gray-300 mb-2">
+                        Audio File
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <input type="file"
+                                   name="{{ form.audio_file.name }}"
+                                   id="{{ form.audio_file.id_for_label }}"
+                                   class="hidden"
+                                   accept="audio/*">
+                            <label for="{{ form.audio_file.id_for_label }}"
+                                   class="block w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-gray-300 cursor-pointer hover:bg-slate-700/50 transition-all">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-upload"></i>
+                                    <span>Choose file</span>
+                                </span>
+                            </label>
+                        </div>
+                        {% if beat.audio_file %}
+                        <span class="text-sm text-gray-400">
+                            Current: {{ beat.audio_file.name|slice:"6:" }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if form.audio_file.errors %}
+                    <p class="mt-1 text-sm text-red-400">{{ form.audio_file.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Tags Field -->
+                <div class="form-group">
+                    <label for="{{ form.tags.id_for_label }}"
+                           class="block text-sm font-medium text-gray-300 mb-2">
+                        Tags
+                    </label>
+                    <div class="relative">
+                        <input type="text"
+                               name="{{ form.tags.name }}"
+                               id="{{ form.tags.id_for_label }}"
+                               value="{{ form.tags.value|default:'' }}"
+                               class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                               placeholder="Enter tags (press space to add)"
+                               x-data="tagInput()"
+                               x-init="initTags($el.value)"
+                               x-on:keydown.space.prevent="addTag($el)"
+                               x-on:keydown.backspace="removeLastTag($el)">
+                        <div class="absolute top-full left-0 right-0 mt-2">
+                            <div class="flex flex-wrap gap-2" id="tagContainer">
+                                <template x-for="tag in tags" :key="tag">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium"
+                                          style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(29, 78, 216, 0.1));
+                                                 border: 1px solid rgba(37, 99, 235, 0.2);
+                                                 color: #bfdbfe;">
+                                        <span x-text="tag"></span>
+                                        <button type="button" 
+                                                class="ml-1 text-blue-300 hover:text-blue-200" 
+                                                x-on:click="removeTag(tag, $el.closest('input'))">×</button>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.tags.errors %}
+                    <p class="mt-1 text-sm text-red-400">{{ form.tags.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 mt-8">
+                    <button type="submit" 
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center gap-2">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                    <a href="{% url 'dashboard' %}" 
+                       class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-all duration-200">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function tagInput() {
+        return {
+            tags: [],
+            initTags(value) {
+                if (value) {
+                    this.tags = value.split(' ').filter(tag => tag.length > 0);
+                }
+            },
+            addTag(el) {
+                const tag = el.value.trim();
+                if (tag.length > 0 && !this.tags.includes(tag)) {
+                    this.tags.push(tag);
+                    el.value = '';
+                    this.updateInputValue(el);
+                }
+            },
+            removeTag(tagToRemove, input) {
+                this.tags = this.tags.filter(tag => tag !== tagToRemove);
+                this.updateInputValue(input);
+            },
+            removeLastTag(el) {
+                if (el.value.length === 0 && this.tags.length > 0) {
+                    this.tags.pop();
+                    this.updateInputValue(el);
+                }
+            },
+            updateInputValue(input) {
+                input.value = this.tags.join(' ');
+            }
+        }
+    }
+
+    // File input handler
+    document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Choose file';
+        const label = this.nextElementSibling.querySelector('span span');
+        label.textContent = fileName;
+    });
+</script>
+{% endblock %} 

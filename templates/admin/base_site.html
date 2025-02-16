@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #2c3e50;
+        --secondary: #34495e;
+        --accent: #3498db;
+        --primary-fg: #fff;
+    }
+
+    /* Header */
+    #header {
+        background: var(--primary);
+        color: var(--primary-fg);
+    }
+    
+    /* Link colors */
+    a:link, a:visited {
+        color: var(--accent);
+    }
+
+    /* Button styles */
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: var(--accent);
+    }
+    
+    /* Module headers */
+    .module h2, .module caption, .inline-group h2 {
+        background: var(--secondary);
+    }
+</style>
+{% endblock %} 

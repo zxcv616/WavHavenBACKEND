@@ -1,0 +1,212 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<style>
+    /* Custom audio player styling */
+    audio {
+        filter: invert(100%) hue-rotate(180deg) !important;
+        opacity: 0.8;
+        border-radius: 8px;
+        width: 100%;
+        height: 32px;
+    }
+
+    audio::-webkit-media-controls-panel {
+        background-color: rgba(30, 41, 59, 0.7);
+    }
+
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display {
+        color: #94A3B8;
+    }
+
+    audio::-webkit-media-controls-timeline {
+        background-color: #1E293B;
+        border-radius: 4px;
+        margin: 0 10px;
+    }
+
+    audio::-webkit-media-controls-play-button,
+    audio::-webkit-media-controls-mute-button {
+        filter: grayscale(1) brightness(1.5);
+    }
+</style>
+
+<div class="max-w-6xl mx-auto">
+    <div class="glass-effect rounded-xl p-8" style="backdrop-filter: blur(2px);">
+        <h2 class="text-3xl font-bold mb-6 gradient-text">Upload Beat</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Left Column - Basic Info -->
+                <div class="space-y-6">
+                    <!-- Title -->
+                    <div>
+                        <label for="id_title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                        <input type="text" name="title" id="id_title" required 
+                               class="search-input w-full hover-scale-sm" 
+                               placeholder="Enter beat title">
+                    </div>
+                    
+                    <!-- Price and BPM Row -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_price" class="block text-sm font-medium text-gray-300 mb-2">Price ($)</label>
+                            <input type="number" name="price" id="id_price" required 
+                                   class="search-input w-full hover-scale-sm" 
+                                   placeholder="Enter price"
+                                   step="0.01">
+                        </div>
+                        
+                        <div>
+                            <label for="id_bpm" class="block text-sm font-medium text-gray-300 mb-2">BPM</label>
+                            <input type="number" name="bpm" id="id_bpm" 
+                                   class="search-input w-full hover-scale-sm" 
+                                   placeholder="Enter BPM">
+                        </div>
+                    </div>
+                    
+                    <!-- Genre and Key Row -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_genre" class="block text-sm font-medium text-gray-300 mb-2">Genre</label>
+                            <select name="genre" id="id_genre" required 
+                                    class="search-input w-full hover-scale-sm bg-[#1a1f2d] text-gray-300">
+                                <option value="" class="bg-[#1a1f2d]">Select a genre</option>
+                                {% for genre in genres %}
+                                    <option value="{{ genre.id }}" class="bg-[#1a1f2d]">{{ genre.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="id_key" class="block text-sm font-medium text-gray-300 mb-2">Key</label>
+                            <input type="text" name="key" id="id_key" 
+                                   class="search-input w-full hover-scale-sm" 
+                                   placeholder="e.g., C minor">
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div x-data="tagInput({% if beat %}{{ beat.tags|safe }}{% else %}''{% endif %})" class="space-y-2">
+                        <label for="id_tags" class="block text-sm font-medium text-gray-300 mb-2">Tags</label>
+                        <div class="relative">
+                            <div class="search-input w-full min-h-[42px] flex flex-wrap gap-2 p-2">
+                                <template x-for="(tag, index) in tags" :key="index">
+                                    <span class="inline-flex items-center px-2 py-1 bg-blue-500 bg-opacity-10 text-blue-300 rounded-full text-xs">
+                                        <span x-text="tag"></span>
+                                        <button type="button" @click="removeTag(index)" class="ml-1 text-blue-300 hover:text-blue-200">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                </template>
+                                <input x-model="currentTag"
+                                       @keydown.space.prevent="addCurrentTag"
+                                       @keydown.enter.prevent="addCurrentTag"
+                                       @keydown.backspace="handleBackspace"
+                                       class="inline-flex flex-1 min-w-[60px] bg-transparent outline-none text-gray-300"
+                                       placeholder="Type a tag and press space">
+                            </div>
+                            <input type="hidden" name="tags" x-model="tagsString" id="id_tags">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Files -->
+                <div class="space-y-6">
+                    <!-- Audio File -->
+                    <div x-data="{ fileName: '', audioPreview: null }">
+                        <label for="id_audio_file" class="block text-sm font-medium text-gray-300 mb-2">Audio File</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-blue-500 transition-colors duration-200"
+                             :class="{ 'border-blue-500 bg-blue-500 bg-opacity-5': fileName }">
+                            <div class="space-y-1 text-center w-full">
+                                <i class="fas fa-music text-4xl" :class="fileName ? 'text-blue-400' : 'text-gray-400'"></i>
+                                <div class="flex text-sm text-gray-400 justify-center">
+                                    <label for="id_audio_file" class="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none">
+                                        <span x-text="fileName ? 'Change file' : 'Upload a file'"></span>
+                                        <input id="id_audio_file" name="audio_file" type="file" class="sr-only" accept="audio/*" required
+                                               @change="fileName = $event.target.files[0].name; audioPreview = URL.createObjectURL($event.target.files[0]);">
+                                    </label>
+                                    <p class="pl-1" x-show="!fileName">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500" x-show="!fileName">MP3, WAV up to 10MB</p>
+                                
+                                <div x-show="fileName" class="mt-2">
+                                    <p class="text-sm text-blue-400" x-text="fileName"></p>
+                                    <div x-show="audioPreview" class="mt-3 bg-[#1E293B] bg-opacity-50 rounded-lg p-2">
+                                        <audio :src="audioPreview" controls class="w-full"></audio>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cover Image -->
+                    <div x-data="{ fileName: '', imagePreview: null }">
+                        <label for="id_cover_image" class="block text-sm font-medium text-gray-300 mb-2">Cover Image</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-blue-500 transition-colors duration-200"
+                             :class="{ 'border-blue-500 bg-blue-500 bg-opacity-5': fileName }">
+                            <div class="space-y-1 text-center">
+                                <template x-if="!imagePreview">
+                                    <i class="fas fa-image text-4xl" :class="fileName ? 'text-blue-400' : 'text-gray-400'"></i>
+                                </template>
+                                <template x-if="imagePreview">
+                                    <img :src="imagePreview" class="mx-auto h-32 w-32 object-cover rounded-lg">
+                                </template>
+                                <div class="flex text-sm text-gray-400 justify-center">
+                                    <label for="id_cover_image" class="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none">
+                                        <span x-text="fileName ? 'Change image' : 'Upload cover'"></span>
+                                        <input id="id_cover_image" name="cover_image" type="file" class="sr-only" accept="image/*"
+                                               @change="fileName = $event.target.files[0].name; imagePreview = URL.createObjectURL($event.target.files[0]);">
+                                    </label>
+                                    <p class="pl-1" x-show="!fileName">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500" x-show="!fileName">PNG, JPG up to 2MB</p>
+                                <p x-show="fileName" class="text-sm text-blue-400 mt-2" x-text="fileName"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-8">
+                <button type="submit" 
+                        class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
+                    Upload Beat
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function tagInput(initialTags = '') {
+        return {
+            tags: initialTags ? initialTags.split(' ').filter(tag => tag.length > 0) : [],
+            currentTag: '',
+            get tagsString() {
+                return this.tags.join(' ');
+            },
+            addCurrentTag() {
+                const tag = this.currentTag.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (tag && !this.tags.includes(tag)) {
+                    this.tags.push(tag);
+                }
+                this.currentTag = '';
+            },
+            removeTag(index) {
+                this.tags.splice(index, 1);
+            },
+            handleBackspace(e) {
+                if (this.currentTag === '' && this.tags.length > 0) {
+                    this.removeTag(this.tags.length - 1);
+                }
+            }
+        }
+    }
+</script>
+{% endblock %} 

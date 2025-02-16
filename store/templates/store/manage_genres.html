@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white p-8">
+        <h1 class="text-2xl font-bold mb-6">Manage Genres</h1>
+        
+        <!-- Add New Genre Form -->
+        <form method="POST" class="mb-8">
+            {% csrf_token %}
+            <div class="flex gap-4">
+                <input type="text" 
+                       name="genre_name" 
+                       placeholder="Enter new genre name"
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
+                       required>
+                <button type="submit" 
+                        class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                    Add Genre
+                </button>
+            </div>
+        </form>
+        
+        <!-- Existing Genres -->
+        <div class="grid grid-cols-1 gap-4">
+            {% for genre in genres %}
+            <div class="flex items-center justify-between p-4 border rounded-lg">
+                <span class="text-lg">{{ genre.name }}</span>
+                <span class="text-sm text-gray-500">{{ genre.beat_set.count }} beats</span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No genres added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

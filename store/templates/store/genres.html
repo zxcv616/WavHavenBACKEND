@@ -1,0 +1,14 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for genre in genres %}
+    <a href="{% url 'beat_list' %}?q={{ genre.name }}" 
+       class="group relative overflow-hidden aspect-square bg-gray-100 hover:bg-gray-200 transition-colors duration-300">
+        <div class="absolute inset-0 flex items-center justify-center">
+            <h2 class="text-2xl font-bold text-black">{{ genre.name }}</h2>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %} 

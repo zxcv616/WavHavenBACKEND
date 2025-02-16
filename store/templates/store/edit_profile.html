@@ -1,0 +1,60 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                <input type="text" name="first_name" value="{{ user.first_name }}"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                <input type="text" name="last_name" value="{{ user.last_name }}"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+            </div>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" name="email" value="{{ user.email }}"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Bio</label>
+            <textarea name="bio" rows="3"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">{{ user.userprofile.bio }}</textarea>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Website</label>
+            <input type="url" name="website" value="{{ user.userprofile.website }}"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
+            <input type="file" name="avatar" accept="image/*"
+                   class="mt-1 block w-full">
+        </div>
+        
+        <div class="flex justify-end space-x-4">
+            <a href="{% url 'dashboard' %}" 
+               class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                Cancel
+            </a>
+            <button type="submit" 
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

@@ -1,0 +1,18 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Producers</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for producer in producers %}
+        <div class="glass-effect rounded-xl p-6">
+            <h2 class="text-xl font-semibold text-white">{{ producer.username }}</h2>
+            <p class="text-gray-400">Beats: {{ producer.beat_set.count }}</p>
+            <a href="{% url 'producer_profile' producer.id %}" class="text-blue-400 hover:text-blue-300">View Profile</a>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">No producers found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

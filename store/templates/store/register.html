@@ -1,0 +1,75 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="glass-effect rounded-xl p-8" style="backdrop-filter: blur(2px);">
+        <h2 class="text-3xl font-bold mb-6 gradient-text">Create Account</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Username -->
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <input type="text" name="username" id="id_username" required 
+                       class="search-input w-full hover-scale-sm" 
+                       placeholder="Choose a username">
+                {% if form.username.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Email -->
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Password -->
+            <div>
+                <label for="id_password1" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <input type="password" name="password1" id="id_password1" required 
+                       class="search-input w-full hover-scale-sm" 
+                       placeholder="Create a password">
+                {% if form.password1.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+                <ul class="text-xs text-gray-400 mt-2 space-y-1 list-disc list-inside">
+                    <li>At least 8 characters long</li>
+                    <li>Must contain letters and numbers</li>
+                    <li>Can't be too similar to your username</li>
+                    <li>Can't be a commonly used password</li>
+                </ul>
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+                <label for="id_password2" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2" required 
+                       class="search-input w-full hover-scale-sm" 
+                       placeholder="Confirm your password">
+                {% if form.password2.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" 
+                    class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
+                Create Account
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-gray-400">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-blue-400 hover:text-blue-300 transition-colors duration-200">
+                    Sign in
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %} 

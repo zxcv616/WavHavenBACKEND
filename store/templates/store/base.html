@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAVHAVEN - Beat Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Modern gradient background */
+        body {
+            position: relative;
+            background: linear-gradient(130deg, 
+                #0f172a 0%,
+                #1e1b4b 25%,
+                #312e81 50%,
+                #1e1b4b 75%,
+                #0f172a 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #e2e8f0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Subtle gradient overlays for depth */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* Ensure content stays above background */
+        main, nav, footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Modern Navigation */
+        nav {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* Modern Buttons */
+        .nav-button {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: #e2e8f0;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .nav-button.primary {
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            border: none;
+        }
+
+        .nav-button.primary:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Modern Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 3rem 0;
+        }
+
+        .footer-heading {
+            color: #e2e8f0;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-link {
+            color: #94a3b8;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #818cf8;
+        }
+
+        .social-icon {
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .social-icon:hover {
+            color: #818cf8;
+            transform: translateY(-2px);
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Glass effect refinements */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon span {
+            position: absolute;
+            width: 4px;
+            height: 24px;
+            border-radius: 2px;
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        .logo-icon span:nth-child(1) {
+            transform: translateX(-8px) scaleY(1);
+            background: #818cf8;
+            animation: smoothWave1 3s ease-in-out infinite;
+        }
+
+        .logo-icon span:nth-child(2) {
+            transform: translateX(0) scaleY(0.67);
+            background: #6366f1;
+            animation: smoothWave2 3s ease-in-out infinite;
+            animation-delay: -1s;
+        }
+
+        .logo-icon span:nth-child(3) {
+            transform: translateX(8px) scaleY(0.83);
+            background: #a5b4fc;
+            animation: smoothWave3 3s ease-in-out infinite;
+            animation-delay: -2s;
+        }
+
+        @keyframes smoothWave1 {
+            0%, 100% { transform: translateX(-8px) scaleY(1); }
+            50% { transform: translateX(-8px) scaleY(0.67); }
+        }
+
+        @keyframes smoothWave2 {
+            0%, 100% { transform: translateX(0) scaleY(0.67); }
+            50% { transform: translateX(0) scaleY(1); }
+        }
+
+        @keyframes smoothWave3 {
+            0%, 100% { transform: translateX(8px) scaleY(0.83); }
+            50% { transform: translateX(8px) scaleY(0.5); }
+        }
+
+        .logo-text {
+            background: linear-gradient(
+                135deg,
+                #fff 0%,
+                #c7d2fe 20%,
+                #818cf8 40%,
+                #4f46e5 60%,
+                #fff 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            will-change: background-position;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Hover effect */
+        .logo:hover .logo-icon span {
+            animation-duration: 2s;
+        }
+
+        .logo:hover .logo-text {
+            animation-duration: 2s;
+        }
+
+        /* Ensure sufficient color contrast */
+        .text-gray-400 {
+            color: #9CA3AF; /* Increased contrast from default */
+        }
+        
+        /* Focus styles for keyboard navigation */
+        *:focus-visible {
+            outline: 2px solid #3B82F6;
+            outline-offset: 2px;
+        }
+
+        /* Search Bar Styles */
+        .search-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #818cf8;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Search Container */
+        .search-container {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        /* Hover scale animation */
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+
+        .hover-scale-sm:hover {
+            transform: scale(1.01);
+        }
+
+        /* Typography enhancements */
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: -0.025em;
+        }
+
+        /* Improved text hierarchy */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #c7d2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        /* Page transition */
+        .page-transition {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Skeleton loading state */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.03) 25%,
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(255, 255, 255, 0.03) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: -200% 0; }
+        }
+
+        /* Button interactions */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* Input focus states */
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2),
+                        0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Card components */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Badge components */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(255, 255, 255, 0.05),
+                transparent
+            );
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body class="antialiased" x-data="{ mobileMenu: false }">
+    <!-- Skip to main content link -->
+    <a href="#main-content" 
+       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg">
+        Skip to main content
+    </a>
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <a href="{% url 'beat_list' %}" class="nav-button">Explore</a>
+                <div class="relative">
+                    <button id="genreDropdown" class="nav-button">
+                        Genres
+                        <i class="fas fa-caret-down ml-1"></i>
+                    </button>
+                    <div id="genreMenu" class="absolute hidden bg-slate-800 rounded-lg shadow-lg mt-2 z-10">
+                        <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-slate-700">Hip Hop</a>
+                        <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-slate-700">R&B</a>
+                        <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-slate-700">Pop</a>
+                        <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-slate-700">Electronic</a>
+                        <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-slate-700">Rock</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-button">Dashboard</a>
+                    <a href="{% url 'beat_upload' %}" class="nav-button">Upload</a>
+                    <a href="{% url 'logout' %}" class="nav-button">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-button">Login</a>
+                    <a href="{% url 'register' %}" class="nav-button primary">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Updated Search Section -->
+    {% if request.resolver_match.url_name == 'beat_list' %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="max-w-3xl mx-auto">
+            <form action="{% url 'beat_list' %}" method="GET" class="relative">
+                <div class="relative flex items-center justify-center">
+                    <input type="text" 
+                           name="q"
+                           placeholder="SEARCH FOR BEATS, MELODIES, & DRUMKITS"
+                           class="search-input hover-scale"
+                           value="{{ request.GET.q }}"
+                           x-data
+                           @focus="$el.select()">
+                    <button type="submit" 
+                            class="absolute right-4 text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center justify-center">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if messages %}
+            <div class="mb-8">
+                {% for message in messages %}
+                    <div x-data="{ show: true }"
+                         x-show="show"
+                         x-transition
+                         class="glass-effect px-6 py-3 rounded-lg mb-2 animate-float"
+                         role="alert">
+                        {{ message }}
+                        <button @click="show = false" class="ml-4 text-blue-400 hover:text-blue-300 transition-colors duration-200">
+                            ×
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="fade-in">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="footer-heading">WAVHAVEN</h3>
+                    <p class="text-gray-400 mb-4">The premier platform for beat makers and music producers.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">About Us</a></li>
+                        <li><a href="#" class="footer-link">Terms of Service</a></li>
+                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">Help Center</a></li>
+                        <li><a href="#" class="footer-link">Contact Us</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="mt-8 pt-8 border-t border-gray-800">
+                <p class="text-gray-400 text-center">
+                    © {% now "Y" %} WAVHAVEN. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenu" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 transform -translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform -translate-y-2"
+         class="md:hidden border-t border-gray-200">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="{% url 'genres' %}" class="block px-3 py-2">EXPLORE</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2">DASHBOARD</a>
+                <a href="{% url 'beat_upload' %}" class="block px-3 py-2">UPLOAD</a>
+                <a href="{% url 'admin:logout' %}" class="block px-3 py-2">LOGOUT</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="block px-3 py-2">REGISTER</a>
+                <a href="{% url 'admin:login' %}" class="block px-3 py-2">LOGIN</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 
