@@ -12,7 +12,6 @@ The venv includes only django for now, i decided not to use restapi yet
 - Django
 - REST Framework
 - SQLite
-- 
 
 ## Functionality
 - Create accounts
