@@ -3,6 +3,17 @@
 ## Venv
 The venv includes only django for now, i decided not to use restapi yet
 
+## Tech stack
+- HTML/CSS
+- JavaScript
+- Alpine.js
+- Tailwind CSS
+- Python
+- Django
+- REST Framework
+- SQLite
+- 
+
 ## Functionality
 - Create accounts
 - Log in
